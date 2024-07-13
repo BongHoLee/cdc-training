@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # 데이터 디렉토리 경로
-KAFKA1_DATA_DIR="../config-mount/kafka1"
-KAFKA2_DATA_DIR="../config-mount/kafka2"
-KAFKA3_DATA_DIR="../config-mount/kafka3"
-ZOOKEEPER_DATA_DIR="../config-mount/zookeeper"
+KAFKA0_DATA_DIR="../config-mount/kafka00"
+KAFKA1_DATA_DIR="../config-mount/kafka01"
+KAFKA2_DATA_DIR="../config-mount/kafka02"
 
 # 데이터 디렉토리 제거 및 생성 함수
 reset_data_dir() {
@@ -20,9 +19,8 @@ reset_data_dir() {
 }
 
 # 데이터 디렉토리 제거 및 생성 실행
+reset_data_dir "$KAFKA0_DATA_DIR"
 reset_data_dir "$KAFKA1_DATA_DIR"
 reset_data_dir "$KAFKA2_DATA_DIR"
-reset_data_dir "$KAFKA3_DATA_DIR"
-reset_data_dir "$ZOOKEEPER_DATA_DIR"
 
 echo "All specified data directories have been reset."

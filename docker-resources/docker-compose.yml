@@ -1,84 +1,105 @@
-version: '3.8'
+networks:
+  kafka_network:
+
 services:
-  zookeeper:
-    image: bitnami/zookeeper:latest
+  ### Kafka00
+  kafka00:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    restart: unless-stopped
+    container_name: kafka00
     ports:
-      - "2181:2181"
+      - '10000:9094'
     environment:
-      - ZOO_ENABLE_AUTH=no
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    volumes:
-      - ./config-mount/zookeeper/conf:/opt/bitnami/zookeeper/conf
-      - ./config-mount/zookeeper/data:/bitnami/zookeeper
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "2181"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    stop_grace_period: 60s
-
-  kafka1:
-    image: bitnami/kafka:latest
-    ports:
-      - "9092:9092"
-      - "29092:29092"
-    volumes:
-      - ./config-mount/kafka1/data:/bitnami/kafka
-      - ./config-mount/kafka1/config:/opt/bitnami/kafka/config
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka1:9092,EXTERNAL://192.168.1.100:29092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true # 존재하지 않는 토픽에 대한 요청을 받으면 자동으로 토픽을 생성
+      # KRaft settings
+      - KAFKA_CFG_BROKER_ID=0
+      - KAFKA_CFG_NODE_ID=0 # KRaft에서 사용하는 노드 ID
+      - KAFKA_KRAFT_CLUSTER_ID=HsDBs9l6UUmQq7Y5E6bNlw # KRaft 클러스터 전체의 고유 식별자, 클러스터의 모든 노드가 동일한 클러스터의 일부로 인식
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka00:9093,1@kafka01:9093,2@kafka02:9093 # 컨트롤러 쿼럼 구성. 각 노드 ID와 노드의 컨트롤러 서비스 리스너 포트 지정
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker # 컨트롤러 및 브로커 역할
+      # Listeners
       - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    stop_signal: SIGTERM
-    stop_grace_period: 30s
-
-  kafka2:
-    image: bitnami/kafka:latest
-    ports:
-      - "9093:9092"
-      - "29093:29093"
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka00:9092,EXTERNAL://127.0.0.1:10000 # 클라이언트가 실제로 연결할 수 있는 주소를 정의
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      # Clustering
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2
+    networks:
+      - kafka_network
     volumes:
-      - ./config-mount/kafka2/data:/bitnami/kafka
-      - ./config-mount/kafka2/config:/opt/bitnami/kafka/config
-    environment:
-      - KAFKA_BROKER_ID=2
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:29093
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka2:9092,EXTERNAL://192.168.1.100:29093
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    stop_signal: SIGTERM
-    stop_grace_period: 30s
+      - "./config-mount/kafka00:/bitnami/kafka"
+      - "./config-mount/kafka00/config:/opt/bitnami/kafka/config"
 
-  kafka3:
-    image: bitnami/kafka:latest
+  ### Kafka01
+  kafka01:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    restart: unless-stopped
+    container_name: kafka01
     ports:
-      - "9094:9092"
-      - "29094:29094"
-    volumes:
-      - ./config-mount/kafka3/data:/bitnami/kafka
-      - ./config-mount/kafka3/config:/opt/bitnami/kafka/config
+      - '10001:9094'
     environment:
-      - KAFKA_BROKER_ID=3
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:29094
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka3:9092,EXTERNAL://192.168.1.100:29094
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      # KRaft settings
+      - KAFKA_CFG_BROKER_ID=1
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_KRAFT_CLUSTER_ID=HsDBs9l6UUmQq7Y5E6bNlw
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka00:9093,1@kafka01:9093,2@kafka02:9093
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      # Listeners
       - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    stop_signal: SIGTERM
-    stop_grace_period: 30s
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka01:9092,EXTERNAL://127.0.0.1:10001
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      # Clustering
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2
+    networks:
+      - kafka_network
+    volumes:
+      - "./config-mount/kafka01:/bitnami/kafka"
+      - "./config-mount/kafka01/config:/opt/bitnami/kafka/config"
+
+  ## Kafka02
+  kafka02:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    restart: unless-stopped
+    container_name: kafka02
+    ports:
+      - '10002:9094'
+    environment:
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      # KRaft settings
+      - KAFKA_CFG_BROKER_ID=2
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_KRAFT_CLUSTER_ID=HsDBs9l6UUmQq7Y5E6bNlw
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka00:9093,1@kafka01:9093,2@kafka02:9093
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      # Listeners
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka02:9092,EXTERNAL://127.0.0.1:10002
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      # Clustering
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2
+    networks:
+      - kafka_network
+    volumes:
+      - "./config-mount/kafka02:/bitnami/kafka"
+      - "./config-mount/kafka02/config:/opt/bitnami/kafka/config"
