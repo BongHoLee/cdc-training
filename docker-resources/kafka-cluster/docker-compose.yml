@@ -33,8 +33,8 @@ services:
     networks:
       - kafka_network
     volumes:
-      - "./kafka-cluster/config-mount/kafka00:/bitnami/kafka"
-      - "./kafka-cluster/config-mount/kafka00/config:/opt/bitnami/kafka/config"
+      - "./config-mount/kafka00:/bitnami/kafka"
+      - "./config-mount/kafka00/config:/opt/bitnami/kafka/config"
 
   ### Kafka01
   kafka01:
@@ -67,8 +67,8 @@ services:
     networks:
       - kafka_network
     volumes:
-      - "./kafka-cluster/config-mount/kafka01:/bitnami/kafka"
-      - "./kafka-cluster/config-mount/kafka01/config:/opt/bitnami/kafka/config"
+      - "./config-mount/kafka01:/bitnami/kafka"
+      - "./config-mount/kafka01/config:/opt/bitnami/kafka/config"
 
   ## Kafka02
   kafka02:
@@ -101,5 +101,25 @@ services:
     networks:
       - kafka_network
     volumes:
-      - "./kafka-cluster/config-mount/kafka02:/bitnami/kafka"
-      - "./kafka-cluster/config-mount/kafka02/config:/opt/bitnami/kafka/config"
+      - "./config-mount/kafka02:/bitnami/kafka"
+      - "./config-mount/kafka02/config:/opt/bitnami/kafka/config"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
+    container_name: kafka-ui
+    ports:
+      - '28080:8080'
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=Local-Kraft-Cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka00:9092,kafka01:9092,kafka02:9092
+      - DYNAMIC_CONFIG_ENABLED=true
+      - KAFKA_CLUSTERS_0_AUDIT_TOPICAUDITENABLED=true
+      - KAFKA_CLUSTERS_0_AUDIT_CONSOLEAUDITENABLED=true
+      #- KAFKA_CLUSTERS_0_METRICS_PORT=9999
+    depends_on:
+      - kafka00
+      - kafka01
+      - kafka02
+    networks:
+      - kafka_network
