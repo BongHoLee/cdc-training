@@ -1,6 +1,7 @@
 networks:
   kafka_network:
 
+
 services:
   ### Kafka00
   kafka00:
@@ -33,8 +34,8 @@ services:
     networks:
       - kafka_network
     volumes:
-      - "./config-mount/kafka00:/bitnami/kafka"
-      - "./config-mount/kafka00/config:/opt/bitnami/kafka/config"
+      - "./kafka-mount/kafka00:/bitnami/kafka"
+      - "./kafka-mount/kafka00/config:/opt/bitnami/kafka/config"
 
   ### Kafka01
   kafka01:
@@ -67,8 +68,8 @@ services:
     networks:
       - kafka_network
     volumes:
-      - "./config-mount/kafka01:/bitnami/kafka"
-      - "./config-mount/kafka01/config:/opt/bitnami/kafka/config"
+      - "./kafka-mount/kafka01:/bitnami/kafka"
+      - "./kafka-mount/kafka01/config:/opt/bitnami/kafka/config"
 
   ## Kafka02
   kafka02:
@@ -101,8 +102,8 @@ services:
     networks:
       - kafka_network
     volumes:
-      - "./config-mount/kafka02:/bitnami/kafka"
-      - "./config-mount/kafka02/config:/opt/bitnami/kafka/config"
+      - "./kafka-mount/kafka02:/bitnami/kafka"
+      - "./kafka-mount/kafka02/config:/opt/bitnami/kafka/config"
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # 데이터 디렉토리 경로
-KAFKA0_DATA_DIR="../config-mount/kafka00"
-KAFKA1_DATA_DIR="../config-mount/kafka01"
-KAFKA2_DATA_DIR="../config-mount/kafka02"
+KAFKA0_DATA_DIR="../kafka-mount/kafka00"
+KAFKA1_DATA_DIR="../kafka-mount/kafka01"
+KAFKA2_DATA_DIR="../kafka-mount/kafka02"
 
 # 데이터 디렉토리 제거 및 생성 함수
 reset_data_dir() {

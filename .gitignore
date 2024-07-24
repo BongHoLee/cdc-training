@@ -44,3 +44,7 @@ bin/
 
 ### docker ###
 **/.lock
+
+### data
+./docker-resources/kafka-cluster/config-mount/*/data
+./docker-resources/mysql/mysql-mount/data
