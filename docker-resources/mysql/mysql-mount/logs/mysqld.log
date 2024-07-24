@@ -1,0 +1,12 @@
+2024-07-23T14:00:11.707726Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.23) starting as process 1
+2024-07-23T14:00:11.729654Z 0 [Warning] [MY-010159] [Server] Setting lower_case_table_names=2 because file system for /var/lib/mysql/ is case insensitive
+2024-07-23T14:00:11.819541Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2024-07-23T14:00:11.869653Z 1 [ERROR] [MY-012585] [InnoDB] Linux Native AIO interface is not supported on this platform. Please check your OS documentation and install appropriate binary of InnoDB.
+2024-07-23T14:00:11.870663Z 1 [Warning] [MY-012654] [InnoDB] Linux Native AIO disabled.
+2024-07-23T14:00:12.217180Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2024-07-23T14:00:12.885516Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2024-07-23T14:00:13.134188Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2024-07-23T14:00:13.135652Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2024-07-23T14:00:13.146380Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2024-07-23T14:00:13.262724Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.23'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+2024-07-23T14:26:41.515886Z 10 [Warning] [MY-010055] [Server] IP address '192.168.65.1' could not be resolved: Name or service not known
