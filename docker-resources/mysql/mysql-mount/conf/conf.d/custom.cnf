@@ -32,6 +32,7 @@ server_id=1
 # Binlog settings
 binlog_format=ROW
 binlog_row_image=FULL
+binlog_row_metadata=FULL
 
 # GTID settings
 gtid_mode=ON
