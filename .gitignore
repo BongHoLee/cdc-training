@@ -50,3 +50,4 @@ bin/
 ./docker-resources/kafka-cluster/kafka01/data/**
 ./docker-resources/kafka-cluster/kafka02/data/**
 ./docker-resources/mysql/mysql-mount/data/**
+./docker-resources/mysql/mysql-mount/data/*
