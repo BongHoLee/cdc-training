@@ -52,3 +52,11 @@ bin/
 ./docker-resources/mysql/mysql-mount/data/
 ./docker-resources/mysql/mysql-mount/data/**
 
+**/kafka-cluster/kafka00/data/**
+**/kafka-cluster/kafka00/data
+**/kafka-cluster/kafka01/data/**
+**/kafka-cluster/kafka01/data
+**/kafka-cluster/kafka02/data/**
+**/kafka-cluster/kafka02/data
+**/mysql/mysql-mount/data/**
+**/mysql/mysql-mount/data/
