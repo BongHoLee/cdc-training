@@ -60,3 +60,4 @@ kafka-cluster/kafka02/data/**
 kafka-cluster/kafka02/data
 mysql/mysql-mount/data/**
 mysql/mysql-mount/data
+mysql/mysql-mount/data/*
