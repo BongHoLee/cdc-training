@@ -61,3 +61,4 @@ kafka-cluster/kafka02/data
 mysql/mysql-mount/data/**
 mysql/mysql-mount/data
 mysql/mysql-mount/data/*
+/docker-resources/mysql/mysql-mount/data/
