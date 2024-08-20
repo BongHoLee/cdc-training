@@ -123,12 +123,13 @@ services:
 
 
   kafka-connect:
-    image: confluentinc/cp-kafka-connect:6.2.1
+    image: confluentinc/cp-kafka-connect:7.1.10
     platform: linux/x86_64
     container_name: kafka-connect
     hostname: kafka-connect
     ports:
       - "8083:8083"
+      - "5083:5083"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka00:9092,kafka01:9092,kafka02:9092
       CONNECT_REST_PORT: 8083
@@ -149,11 +150,17 @@ services:
       CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
       CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
       CONNECT_PLUGIN_PATH: '/etc/kafka-connect/jars'
-      KAFKA_HEAP_OPTS: "-Xms2G -Xmx6G"
+      KAFKA_HEAP_OPTS: "-Xms4G -Xmx8G"
+      # prometheus jmx exporter
+#      KAFKA_OPTS: "-javaagent:/opt/prometheus-jmx-exporter/jmx_prometheus_javaagent-0.19.0.jar=5083:/opt/prometheus-jmx-exporter/kafka-connect.yaml"
+      # jmx client options
+      JMX_PORT: 5084
+      KAFKA_JMX_OPTS: -javaagent:/opt/prometheus-jmx-exporter/jmx_prometheus_javaagent-0.19.0.jar=5083:/opt/prometheus-jmx-exporter/kafka-connect.yaml -Dcom.sun.management.jmxremote.authenticate=false
     volumes:
       - "./kafka-mount/kafka-connect/lib:/etc/kafka-connect/jars"
       - "./kafka-mount/kafka-connect/confluent-hub-components:/usr/share/confluent-hub-components"
       - "./kafka-mount/kafka-connect/conf:/etc/kafka"
+      - "./kafka-mount/kafka-connect/prometheus:/opt/prometheus-jmx-exporter"
     depends_on:
       - kafka00
       - kafka01
