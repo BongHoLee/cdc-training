@@ -149,11 +149,8 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
       CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
       CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
-      CONNECT_PLUGIN_PATH: '/etc/kafka-connect/jars'
+      CONNECT_PLUGIN_PATH: '/etc/kafka-connect/jars,/usr/share/confluent-hub-components'
       KAFKA_HEAP_OPTS: "-Xms4G -Xmx8G"
-      # prometheus jmx exporter
-#      KAFKA_OPTS: "-javaagent:/opt/prometheus-jmx-exporter/jmx_prometheus_javaagent-0.19.0.jar=5083:/opt/prometheus-jmx-exporter/kafka-connect.yaml"
-      # jmx client options
       JMX_PORT: 5084
       KAFKA_JMX_OPTS: -javaagent:/opt/prometheus-jmx-exporter/jmx_prometheus_javaagent-0.19.0.jar=5083:/opt/prometheus-jmx-exporter/kafka-connect.yaml -Dcom.sun.management.jmxremote.authenticate=false
     volumes:
@@ -161,6 +158,8 @@ services:
       - "./kafka-mount/kafka-connect/confluent-hub-components:/usr/share/confluent-hub-components"
       - "./kafka-mount/kafka-connect/conf:/etc/kafka"
       - "./kafka-mount/kafka-connect/prometheus:/opt/prometheus-jmx-exporter"
+
+
     depends_on:
       - kafka00
       - kafka01
@@ -193,3 +192,32 @@ services:
       - kafka-connect
     networks:
       - kafka_network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus-mount/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - kafka_network
+
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000/tcp
+    links:
+      - prometheus
+    environment:
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    volumes:
+      - ./grafana-mount:/etc/grafana/provisioning/
+    networks:
+      - kafka_network
+
+
+

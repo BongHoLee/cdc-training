@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'kafka-connect'
+    scrape_interval: 60s
+    scrape_timeout: 30s
+    honor_timestamps: true
+    static_configs:
+      - targets: ['kafka-connect:5083']
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: hostname
+        regex: '([^:]+)(:[0-9]+)?'
+        replacement: '${1}'
